@@ -1,6 +1,27 @@
-import { Form, Link } from 'react-router-dom';
+import { ActionFunctionArgs, Form, Link, useActionData } from 'react-router-dom';
+import ErrorMessage from '../components/ErrorMessage'
+import {addProduct} from '../services/ProductService'
+
+// eslint-disable-next-line react-refresh/only-export-components
+export async function action( {request} : ActionFunctionArgs){
+    const data = Object.fromEntries(await request.formData())
+
+    let error = ''
+    if(Object.values(data).includes('')){
+        error = 'Todos los campos son obligatorios'
+    }
+
+
+    if(error.length){
+        return error
+    }
+    addProduct(data)
+    return {}
+}
 
 export default function NewProduct() {
+
+    const error = useActionData() as string
     return (
         <>
             <div className='flex justify-between'>
@@ -14,6 +35,7 @@ export default function NewProduct() {
                     Volver a productos
                 </Link>
             </div>
+            {error && <ErrorMessage>{error}</ErrorMessage>}
             <Form className='mt-10' method='POST'>
                 <div className='mb-4'>
                     <label className='text-gray-800' htmlFor='name'>
